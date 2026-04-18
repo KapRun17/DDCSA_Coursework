@@ -13,13 +13,16 @@ const teamSchema = new mongoose.Schema({
   },
   game: {
     type: String,
-    required: [true, 'Игра обязательна']
+    required: [true, 'Игра обязательна'],
+    trim: true
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
+
+  // Состав команды.
   members: [{
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -35,6 +38,8 @@ const teamSchema = new mongoose.Schema({
       default: Date.now
     }
   }],
+
+  // Ограничения набора.
   maxMembers: {
     type: Number,
     default: 10,
@@ -45,10 +50,21 @@ const teamSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+
+  // Требования к кандидатам.
   requirements: {
-    minAge: Number,
-    minRank: String,
-    language: String
+    minAge: {
+      type: Number,
+      min: [13, 'Минимальный возраст кандидата - 13 лет']
+    },
+    minRank: {
+      type: String,
+      trim: true
+    },
+    language: {
+      type: String,
+      trim: true
+    }
   }
 }, {
   timestamps: true
