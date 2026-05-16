@@ -1,18 +1,16 @@
-const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = require('./app');
+const prisma = require('./lib/prisma');
 
 const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI;
 
 async function startServer() {
   try {
-    // Подключение к базе данных.
-    await mongoose.connect(MONGODB_URI);
-    console.log('MongoDB connected');
+    // Проверка подключения к PostgreSQL.
+    await prisma.$connect();
+    console.log('PostgreSQL connected');
 
-    // Запуск HTTP-сервера.
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });

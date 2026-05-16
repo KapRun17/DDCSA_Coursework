@@ -4,13 +4,14 @@
 
 ## Структура проекта
 
-- `/server` - Серверная часть (Node.js + Express)
-- `/client` - Клиентская часть (React)
-- `/docs` - Документация
+- `/server` - серверная часть на Node.js, Express и Prisma
+- `/client` - клиентская часть на React и Vite
+- `/docs` - рабочие материалы по отчету и проектированию
 
 ## Стек технологий
 
-- MongoDB
-- Express.js
-- React.js
-- Node.js
+- React + Vite
+- Node.js + Express
+- PostgreSQL
+- Prisma ORM
+- JWT

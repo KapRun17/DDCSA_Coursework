@@ -1,0 +1,125 @@
+@startuml
+title Создание заявки и отправка отклика
+
+actor "Автор заявки" as Author
+boundary "Клиент автора" as ClientA
+control "Серверное API\nExpress" as API
+control "Сервис авторизации\nJWT" as Auth
+control "Сервис заявок\nи шаблонов" as RequestService
+database "База данных\nPostgreSQL" as DB
+actor "Пользователь" as Responder
+boundary "Клиент пользователя" as ClientB
+
+== Создание игрового шаблона ==
+
+Author -> ClientA : Заполняет шаблон игрока или команды
+activate ClientA
+ClientA -> API : POST /api/templates
+activate API
+API -> Auth : Проверить JWT
+activate Auth
+Auth --> API : Пользователь подтвержден
+deactivate Auth
+API -> RequestService : Валидировать данные шаблона
+activate RequestService
+RequestService -> DB : Создать шаблон
+activate DB
+DB --> RequestService : Данные шаблона
+deactivate DB
+RequestService --> API : Шаблон создан
+deactivate RequestService
+API --> ClientA : 201 Created
+deactivate API
+deactivate ClientA
+
+== Публикация заявки ==
+
+Author -> ClientA : Выбирает шаблон и заполняет заявку
+activate ClientA
+ClientA -> API : POST /api/requests
+activate API
+API -> Auth : Проверить JWT
+activate Auth
+Auth --> API : Пользователь подтвержден
+deactivate Auth
+API -> RequestService : Проверить владельца шаблона
+activate RequestService
+RequestService -> DB : Получить шаблон
+activate DB
+DB --> RequestService : Шаблон принадлежит автору
+RequestService -> DB : Создать заявку
+DB --> RequestService : Данные заявки
+deactivate DB
+RequestService --> API : Заявка создана
+deactivate RequestService
+API --> ClientA : 201 Created
+deactivate API
+deactivate ClientA
+
+== Просмотр каталога заявок ==
+
+Responder -> ClientB : Открывает каталог заявок
+activate ClientB
+ClientB -> API : GET /api/requests
+activate API
+API -> RequestService : Получить открытые заявки
+activate RequestService
+RequestService -> DB : Запрос списка заявок
+activate DB
+DB --> RequestService : Список заявок
+deactivate DB
+RequestService --> API : Карточки заявок
+deactivate RequestService
+API --> ClientB : 200 OK
+deactivate API
+deactivate ClientB
+
+== Отправка отклика и создание диалога ==
+
+Responder -> ClientB : Отправляет отклик с сообщением
+activate ClientB
+ClientB -> API : POST /api/requests/{id}/responses
+activate API
+API -> Auth : Проверить JWT
+activate Auth
+Auth --> API : Пользователь подтвержден
+deactivate Auth
+API -> RequestService : Проверить заявку и автора
+activate RequestService
+RequestService -> DB : Получить заявку
+activate DB
+DB --> RequestService : Данные заявки
+deactivate DB
+
+alt Пользователь откликается на свою заявку
+    RequestService --> API : Ошибка проверки
+    deactivate RequestService
+    API --> ClientB : 400 Bad Request
+    deactivate API
+    deactivate ClientB
+else Отклик разрешен
+    RequestService -> DB : Найти или создать диалог
+    activate DB
+    DB --> RequestService : Данные диалога
+    deactivate DB
+
+    RequestService -> DB : Создать отклик
+    activate DB
+    DB --> RequestService : Данные отклика
+    deactivate DB
+
+    alt Сообщение не пустое
+        RequestService -> DB : Создать сообщение в диалоге
+        activate DB
+        DB --> RequestService : Данные сообщения
+        deactivate DB
+    end
+
+    RequestService --> API : Отклик создан
+    deactivate RequestService
+    API --> ClientB : 201 Created
+    deactivate API
+    deactivate ClientB
+end
+
+@enduml

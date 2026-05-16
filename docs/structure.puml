@@ -1,0 +1,57 @@
+@startuml
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+actor "Пользователь" as User
+actor "Администратор" as Admin
+
+User <|-- Admin
+
+rectangle "Платформа для поиска команд в онлайн-игры" {
+  usecase "Вход и регистрация" as UC_Auth
+
+  usecase "Управление профилем" as UC_Profile
+  usecase "Изменение данных" as UC_EditData
+  usecase "Управление шаблонами" as UC_Templates
+  usecase "Шаблон игрока" as UC_PlayerTemplate
+  usecase "Шаблон команды" as UC_TeamTemplate
+
+  usecase "Оставление заявки" as UC_CreateRequest
+  usecase "Удаление своей заявки" as UC_DeleteOwnRequest
+  usecase "Отклик на заявку" as UC_Respond
+  usecase "Сообщение к отклику" as UC_ResponseMessage
+  usecase "Обмен сообщениями" as UC_Messages
+
+  usecase "Модерация профиля" as UC_ModerateProfile
+  usecase "Модерация заявки" as UC_ModerateRequest
+  usecase "Удаление профиля" as UC_DeleteProfile
+  usecase "Удаление заявки" as UC_DeleteRequest
+}
+
+User -- UC_Auth
+User -- UC_Profile
+User -- UC_CreateRequest
+User -- UC_DeleteOwnRequest
+User -- UC_Respond
+User -- UC_Messages
+
+Admin -- UC_ModerateProfile
+Admin -- UC_ModerateRequest
+Admin -- UC_DeleteProfile
+Admin -- UC_DeleteRequest
+
+UC_EditData ..> UC_Profile : <<include>>
+UC_Templates ..> UC_Profile : <<include>>
+
+UC_PlayerTemplate ..> UC_Templates : <<extend>>
+UC_TeamTemplate ..> UC_Templates : <<extend>>
+
+UC_CreateRequest ..> UC_Templates : <<include>>
+
+UC_ResponseMessage ..> UC_Respond : <<include>>
+
+UC_ModerateProfile ..> UC_Profile : <<extend>>
+UC_ModerateRequest ..> UC_CreateRequest : <<extend>>
+
+@enduml

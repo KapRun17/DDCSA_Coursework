@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 function auth(req, res, next) {
   const header = req.headers.authorization;
 
-  // Проверка заголовка авторизации.
+  // Заголовок авторизации Bearer.
   if (!header || !header.startsWith('Bearer ')) {
     return res.status(401).json({
       message: 'Требуется авторизация'
@@ -13,7 +13,7 @@ function auth(req, res, next) {
   const token = header.split(' ')[1];
 
   try {
-    // Декодирование JWT.
+    // Данные пользователя из JWT.
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     req.user = payload;
     return next();

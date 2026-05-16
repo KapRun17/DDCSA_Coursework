@@ -9,7 +9,7 @@ const router = express.Router();
 
 // Правила регистрации.
 const registerValidationRules = [
-  body('username')
+  body('name')
     .trim()
     .notEmpty()
     .withMessage('Имя пользователя обязательно')
@@ -28,7 +28,7 @@ const registerValidationRules = [
     .withMessage('Пароль должен содержать не менее 6 символов')
 ];
 
-// Правила входа.
+// Правила авторизации.
 const loginValidationRules = [
   body('email')
     .trim()
@@ -41,13 +41,8 @@ const loginValidationRules = [
     .withMessage('Пароль обязателен')
 ];
 
-// Регистрация пользователя.
 router.post('/register', registerValidationRules, validate, authController.register);
-
-// Вход пользователя.
 router.post('/login', loginValidationRules, validate, authController.login);
-
-// Текущий пользователь.
 router.get('/me', auth, authController.me);
 
 module.exports = router;

@@ -1,25 +1,22 @@
-const mongoose = require('mongoose');
+const prisma = require('../lib/prisma');
 
-const { User } = require('../models');
+const userSelect = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+  createdAt: true,
+  updatedAt: true
+};
 
 async function getUsers(req, res) {
-  const { game, isVerified } = req.query;
-
-  // Параметры фильтрации.
-  const filter = {};
-
-  if (game) {
-    filter['games.gameName'] = game;
-  }
-
-  if (typeof isVerified !== 'undefined') {
-    filter.isVerified = isVerified === 'true';
-  }
-
-  // Выборка списка пользователей.
-  const users = await User.find(filter)
-    .select('-password')
-    .sort({ createdAt: -1 });
+  // Список пользователей для административной панели.
+  const users = await prisma.user.findMany({
+    select: userSelect,
+    orderBy: {
+      createdAt: 'desc'
+    }
+  });
 
   return res.json(users);
 }
@@ -27,15 +24,20 @@ async function getUsers(req, res) {
 async function getUserById(req, res) {
   const { id } = req.params;
 
-  // Проверка идентификатора.
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({
-      message: 'Некорректный идентификатор пользователя'
-    });
-  }
-
-  // Поиск пользователя.
-  const user = await User.findById(id).select('-password');
+  // Публичная карточка пользователя.
+  const user = await prisma.user.findUnique({
+    where: {
+      id
+    },
+    select: {
+      ...userSelect,
+      templates: {
+        orderBy: {
+          createdAt: 'desc'
+        }
+      }
+    }
+  });
 
   if (!user) {
     return res.status(404).json({
@@ -46,42 +48,40 @@ async function getUserById(req, res) {
   return res.json(user);
 }
 
-async function createUser(req, res) {
-  // Создание записи пользователя.
-  const user = await User.create(req.body);
-
-  // Возврат пользователя без пароля.
-  const createdUser = await User.findById(user._id).select('-password');
-
-  return res.status(201).json(createdUser);
-}
-
 async function updateUser(req, res) {
   const { id } = req.params;
+  const { name, email } = req.body;
 
-  // Проверка идентификатора.
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({
-      message: 'Некорректный идентификатор пользователя'
-    });
-  }
+  // Проверка существования профиля.
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      id
+    }
+  });
 
-  const payload = { ...req.body };
-
-  // Пароль обновляется отдельным сценарием.
-  delete payload.password;
-
-  // Обновление записи пользователя.
-  const user = await User.findByIdAndUpdate(id, payload, {
-    new: true,
-    runValidators: true
-  }).select('-password');
-
-  if (!user) {
+  if (!existingUser) {
     return res.status(404).json({
       message: 'Пользователь не найден'
     });
   }
+
+  // Изменение профиля владельцем или администратором.
+  if (req.user.id !== id && req.user.role !== 'ADMIN') {
+    return res.status(403).json({
+      message: 'Недостаточно прав для изменения пользователя'
+    });
+  }
+
+  const user = await prisma.user.update({
+    where: {
+      id
+    },
+    data: {
+      name,
+      email
+    },
+    select: userSelect
+  });
 
   return res.json(user);
 }
@@ -89,21 +89,24 @@ async function updateUser(req, res) {
 async function deleteUser(req, res) {
   const { id } = req.params;
 
-  // Проверка идентификатора.
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({
-      message: 'Некорректный идентификатор пользователя'
-    });
-  }
+  // Удаление профиля администратором.
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      id
+    }
+  });
 
-  // Удаление записи пользователя.
-  const user = await User.findByIdAndDelete(id);
-
-  if (!user) {
+  if (!existingUser) {
     return res.status(404).json({
       message: 'Пользователь не найден'
     });
   }
+
+  await prisma.user.delete({
+    where: {
+      id
+    }
+  });
 
   return res.json({
     message: 'Пользователь удален'
@@ -113,7 +116,6 @@ async function deleteUser(req, res) {
 module.exports = {
   getUsers,
   getUserById,
-  createUser,
   updateUser,
   deleteUser
 };

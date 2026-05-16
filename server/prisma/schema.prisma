@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum TemplateType {
+  PLAYER
+  TEAM
+}
+
+enum RequestStatus {
+  OPEN
+  CLOSED
+  MODERATION_BLOCKED
+}
+
+model User {
+  id             String         @id @default(uuid())
+  name           String         @unique
+  email          String         @unique
+  passwordHash   String         @map("password_hash")
+  role           UserRole       @default(USER)
+  templates      Template[]
+  requests       Request[]
+  responses      Response[]
+  sentMessages   Message[]
+  firstDialogs   Conversation[] @relation("FirstDialogUser")
+  secondDialogs  Conversation[] @relation("SecondDialogUser")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Template {
+  id            String       @id @default(uuid())
+  userId        String       @map("id_user_fk")
+  templateType  TemplateType @map("template_type")
+  gameName      String       @map("game_name")
+  title         String
+  preferredRole String?      @map("preferred_role")
+  rank          String?
+  schedule      String?
+  description   String?
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requests      Request[]
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([gameName])
+  @@index([templateType])
+  @@map("templates")
+}
+
+model Request {
+  id          String        @id @default(uuid())
+  userId      String        @map("id_user_fk")
+  templateId  String        @map("id_template_fk")
+  title       String
+  description String
+  status      RequestStatus @default(OPEN)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template    Template      @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  responses   Response[]
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([templateId])
+  @@index([status])
+  @@map("requests")
+}
+
+model Conversation {
+  id           String     @id @default(uuid())
+  firstUserId  String     @map("id_first_user_fk")
+  secondUserId String     @map("id_second_user_fk")
+  firstUser    User       @relation("FirstDialogUser", fields: [firstUserId], references: [id], onDelete: Cascade)
+  secondUser   User       @relation("SecondDialogUser", fields: [secondUserId], references: [id], onDelete: Cascade)
+  responses    Response[]
+  messages     Message[]
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  @@unique([firstUserId, secondUserId])
+  @@index([firstUserId])
+  @@index([secondUserId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  senderId       String       @map("id_user_sender_fk")
+  conversationId String       @map("id_conversation_fk")
+  text           String
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@index([senderId])
+  @@index([conversationId])
+  @@map("messages")
+}
+
+model Response {
+  id             String       @id @default(uuid())
+  responderId    String       @map("id_user_responder_fk")
+  conversationId String       @map("id_conversation_fk")
+  requestId      String       @map("id_request_fk")
+  text           String?
+  responder      User         @relation(fields: [responderId], references: [id], onDelete: Cascade)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  request        Request      @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  @@unique([responderId, requestId])
+  @@index([conversationId])
+  @@index([requestId])
+  @@map("responses")
+}

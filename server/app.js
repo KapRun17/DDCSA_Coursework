@@ -3,7 +3,9 @@ const cors = require('cors');
 
 const authRouter = require('./routes/auth');
 const healthRouter = require('./routes/health');
-const teamsRouter = require('./routes/teams');
+const messagesRouter = require('./routes/messages');
+const requestsRouter = require('./routes/requests');
+const templatesRouter = require('./routes/templates');
 const usersRouter = require('./routes/users');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -20,17 +22,13 @@ app.get('/', (req, res) => {
   });
 });
 
-// Служебные маршруты.
+// Служебные и прикладные маршруты.
 app.use('/api/health', healthRouter);
-
-// Маршруты аутентификации.
 app.use('/api/auth', authRouter);
-
-// Маршруты домена команд.
-app.use('/api/teams', teamsRouter);
-
-// Маршруты домена пользователей.
 app.use('/api/users', usersRouter);
+app.use('/api/templates', templatesRouter);
+app.use('/api/requests', requestsRouter);
+app.use('/api/messages', messagesRouter);
 
 // Единый формат серверных ошибок.
 app.use(errorHandler);
