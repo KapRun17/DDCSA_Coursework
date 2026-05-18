@@ -40,6 +40,8 @@
 docker compose -f docker-compose.prod.yml up -d
 ```
 
+Инструкция для размещения приложения на виртуальной машине Cloud Ru находится в `deploy/cloudru/README.md`.
+
 ## Тестовые данные
 
 После настройки переменной `DATABASE_URL` и применения схемы Prisma можно заполнить базу тестовыми данными:
