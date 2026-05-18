@@ -26,7 +26,7 @@ test('httpClient sends JSON headers and JWT token', async () => {
   localStorage.setItem(TOKEN_KEY, 'test-token');
 
   globalThis.fetch = async (url, options) => {
-    assert.equal(url, 'http://localhost:5000/api/requests');
+    assert.equal(url, '/api/requests');
     assert.equal(options.headers['Content-Type'], 'application/json');
     assert.equal(options.headers.Authorization, 'Bearer test-token');
 

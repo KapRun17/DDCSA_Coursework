@@ -60,7 +60,7 @@ jobs:
       run:
         working-directory: client
     env:
-      VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      VITE_API_URL: /api
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -98,7 +98,7 @@ jobs:
           POSTGRES_DB: ddcsa_coursework
           DATABASE_URL: postgresql://ci_user:ci_password@db:5432/ddcsa_coursework
           JWT_SECRET: ci_secret
-          VITE_API_URL: http://localhost:5000/api
+          VITE_API_URL: /api
         run: docker compose config --quiet
 
       - name: Validate production Docker Compose file
@@ -128,10 +128,10 @@ jobs:
 
       - name: Build client image
         env:
-          CLIENT_API_URL: ${{ secrets.VITE_API_URL }}
+          CLIENT_API_URL: /api
         run: |
           docker build \
-            --build-arg VITE_API_URL="${CLIENT_API_URL:-http://localhost:5000/api}" \
+            --build-arg VITE_API_URL="${CLIENT_API_URL:-/api}" \
             -t "$CLIENT_IMAGE:${{ github.sha }}" \
             -t "$CLIENT_IMAGE:latest" \
             ./client
