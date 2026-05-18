@@ -56,6 +56,7 @@ function respondToRequest(id, payload) {
 }
 
 export {
+  buildQuery,
   createRequest,
   deleteRequest,
   getRequestById,
