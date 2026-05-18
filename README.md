@@ -7,6 +7,8 @@
 - `/server` - серверная часть на Node.js, Express и Prisma
 - `/client` - клиентская часть на React и Vite
 - `/docs` - рабочие материалы по отчету и проектированию
+- `docker-compose.yml` - локальный запуск базы данных, сервера и клиента
+- `docker-compose.prod.yml` - запуск опубликованных Docker-образов
 
 ## Стек технологий
 
@@ -15,6 +17,8 @@
 - PostgreSQL
 - Prisma ORM
 - JWT
+- Docker
+- GitHub Actions
 
 ## Переменные окружения
 
@@ -27,6 +31,98 @@
 
 Клиентская часть в Docker-режиме обращается к API по относительному пути `/api`. Запросы проксируются Nginx в серверный контейнер, поэтому отдельный секрет `VITE_API_URL` для GitHub Actions не требуется.
 
+## Запуск проекта
+
+### Запуск через Docker Compose
+
+1. Создать файл `.env` в корне проекта по примеру `.env.example`.
+
+2. Запустить контейнеры:
+
+```powershell
+docker compose up --build
+```
+
+3. Открыть клиентскую часть:
+
+```text
+http://localhost:5173
+```
+
+4. Проверить серверную часть:
+
+```text
+http://localhost:5000/api/health
+```
+
+При запуске сервер применяет схему Prisma к базе данных и выполняет seed-скрипт с тестовыми данными.
+
+### Локальный запуск без Docker
+
+Для локального запуска без Docker потребуется установленный PostgreSQL и заполненная переменная `DATABASE_URL`.
+
+1. Установить зависимости серверной части:
+
+```powershell
+cd server
+npm install
+```
+
+2. Применить схему базы данных и заполнить тестовые данные:
+
+```powershell
+npm run prisma:push
+npm run prisma:seed
+```
+
+3. Запустить сервер:
+
+```powershell
+npm run dev
+```
+
+4. В отдельном терминале установить зависимости и запустить клиентскую часть:
+
+```powershell
+cd client
+npm install
+npm run dev
+```
+
+По умолчанию клиентская часть доступна по адресу `http://localhost:5173`, серверная часть - по адресу `http://localhost:5000`.
+
+## Проверка проекта
+
+Серверные тесты:
+
+```powershell
+cd server
+npm test
+```
+
+Фаззинг-тестирование серверной части:
+
+```powershell
+cd server
+npm run fuzz
+```
+
+Клиентские тесты:
+
+```powershell
+cd client
+npm test
+```
+
+Сборка клиентской части:
+
+```powershell
+cd client
+npm run build
+```
+
+## CI/CD и Docker-образы
+
 При успешном запуске workflow из веток `master` или `main` Docker-образы публикуются в GitHub Container Registry:
 
 - `ghcr.io/kaprun17/ddcsa-coursework-server:latest`
@@ -38,6 +134,26 @@
 
 ```powershell
 docker compose -f docker-compose.prod.yml up -d
+```
+
+## Развертывание
+
+Приложение может быть развернуто на Render по схеме:
+
+- PostgreSQL Database - база данных приложения
+- Web Service - серверная часть
+- Static Site - клиентская часть
+
+Для серверной части необходимо указать переменные окружения `DATABASE_URL`, `JWT_SECRET`, `NODE_ENV` и `PORT`. Для клиентской части на Render необходимо указать переменную `VITE_API_URL` со значением вида:
+
+```text
+https://<server-service-name>.onrender.com/api
+```
+
+Для корректной работы клиентской маршрутизации в Static Site необходимо добавить правило rewrite:
+
+```text
+/* -> /index.html
 ```
 
 Инструкция для размещения приложения на виртуальной машине Cloud Ru находится в `deploy/cloudru/README.md`.
