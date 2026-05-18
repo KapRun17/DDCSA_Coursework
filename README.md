@@ -16,6 +16,29 @@
 - Prisma ORM
 - JWT
 
+## Переменные окружения
+
+Для локального запуска необходимо создать файл `.env` в корне проекта по примеру `.env.example`. Файл `.env` не добавляется в Git, так как содержит пароль базы данных, строку подключения и секрет JWT.
+
+Для GitHub Actions необходимо добавить секреты в разделе `Settings -> Secrets and variables -> Actions`:
+
+- `DATABASE_URL` - строка подключения к базе данных для серверных проверок;
+- `JWT_SECRET` - секретный ключ для подписи JWT;
+- `VITE_API_URL` - адрес серверного API для сборки клиентской части.
+
+При успешном запуске workflow из веток `master` или `main` Docker-образы публикуются в GitHub Container Registry:
+
+- `ghcr.io/kaprun17/ddcsa-coursework-server:latest`
+- `ghcr.io/kaprun17/ddcsa-coursework-client:latest`
+
+Также для каждого образа создается тег с SHA коммита, что позволяет развернуть конкретную версию приложения.
+
+Для запуска опубликованных образов можно использовать отдельный compose-файл:
+
+```powershell
+docker compose -f docker-compose.prod.yml up -d
+```
+
 ## Тестовые данные
 
 После настройки переменной `DATABASE_URL` и применения схемы Prisma можно заполнить базу тестовыми данными:
