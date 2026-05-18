@@ -16,4 +16,19 @@ function createTemplate(payload) {
   });
 }
 
-export { createTemplate, getTemplates };
+// Обновление игрового шаблона.
+function updateTemplate(id, payload) {
+  return httpClient(`/templates/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  });
+}
+
+// Удаление игрового шаблона.
+function deleteTemplate(id) {
+  return httpClient(`/templates/${id}`, {
+    method: 'DELETE'
+  });
+}
+
+export { createTemplate, deleteTemplate, getTemplates, updateTemplate };

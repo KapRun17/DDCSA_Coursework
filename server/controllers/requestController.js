@@ -146,6 +146,13 @@ async function updateRequest(req, res) {
     });
   }
 
+  // Заблокированная модератором заявка изменяется только администратором.
+  if (existingRequest.status === 'MODERATION_BLOCKED' && req.user.role !== 'ADMIN') {
+    return res.status(403).json({
+      message: 'Заявка заблокирована модератором и не может быть изменена пользователем'
+    });
+  }
+
   const request = await prisma.request.update({
     where: {
       id

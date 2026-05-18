@@ -1,0 +1,42 @@
+@startuml
+title Диаграмма компонентов клиент-серверного веб-приложения
+
+left to right direction
+skinparam componentStyle uml2
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+package "Клиентская часть\nReact SPA" as Client {
+  component "Страницы и маршруты\nReact Router" as Pages
+  component "API-клиент\nfetch" as ApiClient
+  component "Хранилище сессии\nlocalStorage" as Session
+}
+
+package "Серверная часть\nNode.js + Express" as Server {
+  component "Маршруты API" as Routes
+  component "Middleware\nJWT, роли, валидация" as Middleware
+  component "Контроллеры\nAuth, Users, Templates,\nRequests, Messages" as Controllers
+  component "Prisma Client" as Prisma
+}
+
+database "PostgreSQL" as Database {
+  component "Схема данных\nusers, templates,\nrequests, responses,\nconversations, messages" as DbSchema
+}
+
+interface "REST API\nHTTP/JSON" as RestApi
+interface "ORM-доступ\nPrisma" as OrmInterface
+interface "SQL-запросы" as SqlInterface
+
+Pages --> ApiClient : действия пользователя
+Pages --> Session : чтение данных сессии
+ApiClient --> Session : JWT-токен
+ApiClient ..> RestApi : использует
+Routes - RestApi : предоставляет
+Routes --> Middleware : проверка запроса
+Middleware --> Controllers : корректные данные
+Controllers ..> OrmInterface : использует
+Prisma - OrmInterface : предоставляет
+Prisma ..> SqlInterface : использует
+DbSchema - SqlInterface : предоставляет
+
+@enduml

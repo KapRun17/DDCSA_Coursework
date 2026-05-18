@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: ddcsa-coursework-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ddcsa_coursework
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ddcsa_coursework"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+    container_name: ddcsa-coursework-server
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 5000
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/ddcsa_coursework
+      JWT_SECRET: coursework-secret
+      NODE_ENV: production
+    ports:
+      - "5000:5000"
+    command: sh -c "npx prisma db push && npm run prisma:seed && npm start"
+
+  client:
+    build:
+      context: ./client
+      args:
+        VITE_API_URL: http://localhost:5000/api
+    container_name: ddcsa-coursework-client
+    depends_on:
+      - server
+    ports:
+      - "5173:80"
+
+volumes:
+  postgres_data:

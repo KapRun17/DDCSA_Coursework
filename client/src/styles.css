@@ -237,6 +237,13 @@ textarea {
   font-size: 14px;
 }
 
+.templateDescription {
+  padding: 10px 12px;
+  border-left: 3px solid #2f6f63;
+  color: #4b5563;
+  background: #f4faf8;
+}
+
 .errorCard,
 .successCard {
   padding: 14px 16px;
@@ -255,6 +262,15 @@ textarea {
 
 .detailText {
   margin-bottom: 22px;
+  color: #26313d;
+}
+
+.templateDetailCard {
+  margin-bottom: 22px;
+}
+
+.templateDetailCard p {
+  margin-bottom: 0;
   color: #26313d;
 }
 
@@ -288,6 +304,229 @@ textarea {
   gap: 12px;
 }
 
+.buttonRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.templateList {
+  display: grid;
+  gap: 14px;
+}
+
+.templateItem {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #d7dde4;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.profileRequests {
+  max-width: 1180px;
+  margin-top: 18px;
+}
+
+.profileSettings {
+  max-width: 1180px;
+  margin-bottom: 18px;
+}
+
+.compactHeader {
+  margin-bottom: 16px;
+}
+
+.inlineFormGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.profileRequestList {
+  display: grid;
+  gap: 14px;
+}
+
+.profileRequestItem {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #d7dde4;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.requestEditForm {
+  display: grid;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid #d7dde4;
+}
+
+.statusNotice {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 12px;
+  border: 1px solid #efbac2;
+  border-radius: 8px;
+  color: #8d1f2d;
+  background: #fff4f6;
+  font-weight: 800;
+}
+
+.messagesLayout {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 18px;
+}
+
+.conversationList,
+.conversationPanel {
+  margin: 0;
+  max-width: none;
+}
+
+.conversationLink {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid #d7dde4;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.conversationLink + .conversationLink {
+  margin-top: 10px;
+}
+
+.conversationLink span {
+  color: #66717f;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.messageList {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.messageBubble {
+  max-width: 75%;
+  padding: 12px 14px;
+  border: 1px solid #d7dde4;
+  border-radius: 8px;
+  background: #f7f9fb;
+}
+
+.messageBubble p {
+  margin-bottom: 0;
+}
+
+.ownMessage {
+  justify-self: end;
+  color: #ffffff;
+  background: #2f6f63;
+  border-color: #2f6f63;
+}
+
+.messageForm {
+  display: grid;
+  gap: 12px;
+}
+
+.adminHero {
+  max-width: 880px;
+  margin: 0 auto 22px;
+}
+
+.adminGrid {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
+.adminPanel {
+  max-width: none;
+}
+
+.adminTable {
+  display: grid;
+  gap: 8px;
+}
+
+.adminTableHead,
+.adminTableRow {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) minmax(180px, 1.3fr) 110px 120px;
+  gap: 12px;
+  align-items: center;
+}
+
+.adminTableHead {
+  color: #2f6f63;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.adminTableRow,
+.moderationItem {
+  padding: 14px;
+  border: 1px solid #d7dde4;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.moderationList {
+  display: grid;
+  gap: 14px;
+}
+
+.moderationItem {
+  display: grid;
+  gap: 12px;
+}
+
+.dangerButton {
+  color: #8d1f2d;
+  border-color: #efbac2;
+  background: #fff4f6;
+}
+
+.dangerButton:disabled {
+  color: #9aa4b2;
+  cursor: not-allowed;
+  border-color: #d7dde4;
+  background: #f4f6f8;
+}
+
+.notFoundPage {
+  min-height: 100vh;
+  display: grid;
+  align-items: center;
+}
+
+.notFoundCard {
+  max-width: 620px;
+  border-color: #c7d8d4;
+  background:
+    radial-gradient(circle at top right, rgba(47, 111, 99, 0.14), transparent 34%),
+    #ffffff;
+}
+
+.notFoundCard h1 {
+  font-size: clamp(36px, 7vw, 72px);
+}
+
 @media (max-width: 760px) {
   .page {
     padding: 16px;
@@ -295,7 +534,10 @@ textarea {
 
   .topBar,
   .sectionHeader,
-  .workspaceGrid {
+  .workspaceGrid,
+  .messagesLayout,
+  .adminTableHead,
+  .adminTableRow {
     grid-template-columns: 1fr;
   }
 

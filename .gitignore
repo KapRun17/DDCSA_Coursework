@@ -19,5 +19,6 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Temporary report references
+# Documentation
+.docs/
 docs/*_tmp.docx

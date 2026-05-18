@@ -32,6 +32,21 @@ function createRequest(payload) {
   });
 }
 
+// Обновление собственной заявки.
+function updateRequest(id, payload) {
+  return httpClient(`/requests/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload)
+  });
+}
+
+// Удаление собственной заявки.
+function deleteRequest(id) {
+  return httpClient(`/requests/${id}`, {
+    method: 'DELETE'
+  });
+}
+
 // Отклик на заявку.
 function respondToRequest(id, payload) {
   return httpClient(`/requests/${id}/responses`, {
@@ -40,4 +55,11 @@ function respondToRequest(id, payload) {
   });
 }
 
-export { createRequest, getRequestById, getRequests, respondToRequest };
+export {
+  createRequest,
+  deleteRequest,
+  getRequestById,
+  getRequests,
+  respondToRequest,
+  updateRequest
+};

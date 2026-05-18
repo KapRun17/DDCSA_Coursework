@@ -83,6 +83,12 @@ function RequestPage() {
               Автор заявки: <strong>{request.user.name}</strong>
             </p>
             <p className="detailText">{request.description}</p>
+            {request.template.description && (
+              <div className="detailCard templateDetailCard">
+                <span className="detailLabel">Описание шаблона</span>
+                <p>{request.template.description}</p>
+              </div>
+            )}
 
             <div className="detailGrid">
               <div className="detailCard">
@@ -111,6 +117,7 @@ function RequestPage() {
                   <textarea
                     value={responseText}
                     onChange={(event) => setResponseText(event.target.value)}
+                    placeholder="Сообщение необязательно, но поможет быстрее начать диалог"
                     rows="4"
                   />
                 </label>

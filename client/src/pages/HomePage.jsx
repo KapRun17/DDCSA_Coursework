@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { getRequests } from '../api/requestApi.js';
+import LogoutButton from '../components/LogoutButton.jsx';
 import { readSession } from '../lib/session.js';
 
 function RequestCard({ request }) {
@@ -15,6 +16,11 @@ function RequestCard({ request }) {
       </div>
       <h2>{request.title}</h2>
       <p className="muted">{request.description}</p>
+      {request.template.description && (
+        <p className="templateDescription">
+          Шаблон: {request.template.description}
+        </p>
+      )}
       <div className="templateLine">
         <span>{request.template.preferredRole || 'Роль не указана'}</span>
         <span>{request.template.rank || 'Ранг не указан'}</span>
@@ -94,9 +100,21 @@ function HomePage() {
           {session ? (
             <>
               <span className="muted">{session.user.name}</span>
+              <Link className="secondaryButton" to="/profile">
+                Профиль
+              </Link>
+              <Link className="secondaryButton" to="/messages">
+                Сообщения
+              </Link>
+              {session.user.role === 'ADMIN' && (
+                <Link className="secondaryButton" to="/admin">
+                  Админ-панель
+                </Link>
+              )}
               <Link className="primaryButton" to="/requests/new">
                 Создать заявку
               </Link>
+              <LogoutButton />
             </>
           ) : (
             <>
