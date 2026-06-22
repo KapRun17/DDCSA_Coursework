@@ -65,7 +65,7 @@ jobs:
         run: npm run prisma:generate
 
       - name: Prepare test database
-        run: npx prisma db push
+        run: npm run prisma:deploy
 
       - name: Run server tests
         run: npm test

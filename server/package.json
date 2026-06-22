@@ -8,9 +8,9 @@
     "dev": "nodemon index.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:push": "prisma db push",
+    "prisma:deploy": "prisma migrate deploy",
     "prisma:seed": "node prisma/seed.js",
-    "test": "node --test --test-concurrency=1 tests/health.test.js tests/business.test.js",
+    "test": "node --test --test-concurrency=1 tests/health.test.js tests/business.test.js tests/database.test.js",
     "fuzz": "node tests/fuzz.test.js"
   },
   "keywords": [],

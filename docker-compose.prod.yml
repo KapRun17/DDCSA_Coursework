@@ -14,18 +14,41 @@ services:
       timeout: 5s
       retries: 5
 
+  migrate:
+    image: ${SERVER_IMAGE:-ghcr.io/kaprun17/ddcsa-coursework-server:latest}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      NODE_ENV: production
+    command: npm run prisma:deploy
+    restart: "no"
+
   server:
     image: ${SERVER_IMAGE:-ghcr.io/kaprun17/ddcsa-coursework-server:latest}
     container_name: ddcsa-coursework-server
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     environment:
       PORT: 5000
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       NODE_ENV: production
-    command: sh -c "npx prisma db push && npm run prisma:seed && npm start"
+    command: npm start
+
+  seed:
+    profiles: ["seed"]
+    image: ${SERVER_IMAGE:-ghcr.io/kaprun17/ddcsa-coursework-server:latest}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      NODE_ENV: production
+    command: npm run prisma:seed
+    restart: "no"
 
   client:
     image: ${CLIENT_IMAGE:-ghcr.io/kaprun17/ddcsa-coursework-client:latest}

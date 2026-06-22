@@ -12,5 +12,5 @@ RUN npx prisma generate
 
 EXPOSE 5000
 
-# Render запускает только Dockerfile, поэтому схема БД применяется здесь.
-CMD ["sh", "-c", "npx prisma db push && npm run prisma:seed && npm start"]
+# Контейнер приложения запускает только долговременный HTTP-процесс.
+CMD ["npm", "start"]

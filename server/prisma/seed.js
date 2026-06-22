@@ -20,7 +20,8 @@ async function upsertUser({ email, name, role }) {
     },
     update: {
       name,
-      role
+      role,
+      passwordHash
     },
     create: {
       email,
