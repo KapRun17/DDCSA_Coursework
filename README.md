@@ -6,7 +6,6 @@
 
 - `/server` - серверная часть на Node.js, Express и Prisma
 - `/client` - клиентская часть на React и Vite
-- `/docs` - рабочие материалы по отчету и проектированию
 - `docker-compose.yml` - локальный запуск базы данных, сервера и клиента
 - `docker-compose.prod.yml` - запуск опубликованных Docker-образов
 
