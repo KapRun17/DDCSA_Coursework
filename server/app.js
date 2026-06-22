@@ -8,12 +8,14 @@ const requestsRouter = require('./routes/requests');
 const templatesRouter = require('./routes/templates');
 const usersRouter = require('./routes/users');
 const errorHandler = require('./middleware/errorHandler');
+const rejectInvalidCharacters = require('./middleware/rejectInvalidCharacters');
 
 const app = express();
 
 // Базовые middleware API.
 app.use(cors());
 app.use(express.json());
+app.use(rejectInvalidCharacters);
 
 // Корневой маршрут API.
 app.get('/', (req, res) => {

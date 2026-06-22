@@ -1,5 +1,15 @@
 function errorHandler(error, req, res, next) {
-  console.error(error);
+  if (error.type === 'entity.parse.failed') {
+    return res.status(400).json({
+      message: 'Некорректный формат JSON'
+    });
+  }
+
+  if (error.type === 'entity.too.large') {
+    return res.status(413).json({
+      message: 'Размер тела запроса превышает допустимый предел'
+    });
+  }
 
   // Конфликты уникальных ограничений Prisma.
   if (error.code === 'P2002') {
@@ -14,6 +24,19 @@ function errorHandler(error, req, res, next) {
       message: 'Запись не найдена'
     });
   }
+
+  if (
+    error.code === 'P2000'
+    || error.code === 'P2023'
+    || error.name === 'PrismaClientValidationError'
+  ) {
+    return res.status(400).json({
+      message: 'Некорректные данные запроса'
+    });
+  }
+
+  // Непредвиденные ошибки журналируются для последующей диагностики.
+  console.error(error);
 
   return res.status(500).json({
     message: 'Внутренняя ошибка сервера'

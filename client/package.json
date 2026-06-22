@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "test": "node src/client.test.js",
+    "test": "npm run test:unit && npm run test:components",
+    "test:unit": "node src/client.test.js",
+    "test:components": "node src/components.test.js",
     "build": "vite build",
     "preview": "vite preview"
   },

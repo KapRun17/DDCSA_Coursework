@@ -236,6 +236,13 @@ async function respondToRequest(req, res) {
     });
   }
 
+  // Отклики принимаются только по активным заявкам.
+  if (request.status !== 'OPEN') {
+    return res.status(409).json({
+      message: 'Отклик возможен только на открытую заявку'
+    });
+  }
+
   if (request.userId === req.user.id) {
     return res.status(400).json({
       message: 'Нельзя откликнуться на собственную заявку'
